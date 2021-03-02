@@ -139,8 +139,9 @@ def read_function_angle_com_yaw(scan_paths, poses, funcangle_file, leg_output_wi
   
   # read function_angle from saved csv file
   with open(funcangle_file, newline='') as csvfile:
-    spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+    spamreader = csv.reader(csvfile, delimiter='\t', quotechar='|')
     for row in spamreader:
+      # print('row', row)
       idx_1, idx_2, function_angle = row
       frame_idx_1.append(int(idx_1))
       frmae_idx_2.append(int(idx_2))
@@ -165,7 +166,7 @@ def read_function_angle_com_yaw(scan_paths, poses, funcangle_file, leg_output_wi
 
   
   # ground truth format: each row contains [current_frame_idx, reference_frame_idx, function_angles, yaw]
-  ground_truth_mapping = np.zeros((len(scan_paths), 4))
+  ground_truth_mapping = np.zeros((len(function_angles), 4))
   ground_truth_mapping[:, 0] = frame_idx_1
   ground_truth_mapping[:, 1] = frmae_idx_2
   ground_truth_mapping[:, 2] = function_angles

@@ -83,7 +83,7 @@ if __name__ == '__main__':
   train_data, validation_data = split_train_val(dist_norm_data)
   
   # add sequence label to the data and save them as npz files
-  seq_idx = '07'
+  seq_idx = '00'
   # specify the goal folder
   dst_folder = os.path.join(dst_folder, 'ground_truth')
   try:
