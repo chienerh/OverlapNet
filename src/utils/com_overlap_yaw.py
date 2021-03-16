@@ -5,6 +5,7 @@
 
 try: from utils import *
 except: from utils import *
+from tqdm import tqdm
 
 
 def com_overlap_yaw(scan_paths, poses, frame_idx, leg_output_width=360):
@@ -27,8 +28,7 @@ def com_overlap_yaw(scan_paths, poses, frame_idx, leg_output_width=360):
   yaw_resolution = leg_output_width
 
 
-  for frame_idx in range(len(scan_paths)):
-    frame_idx_1.append(frame_idx)
+  for frame_idx in tqdm(range(len(scan_paths))):
   
     # we calculate the ground truth for one given frame only
     # generate range projection for the given frame
@@ -39,6 +39,7 @@ def com_overlap_yaw(scan_paths, poses, frame_idx, leg_output_width=360):
     current_pose = poses[frame_idx]
 
     for reference_idx in range(frame_idx):
+      frame_idx_1.append(frame_idx)
       frmae_idx_2.append(reference_idx)
       # generate range projection for the reference frame
       reference_pose = poses[reference_idx]
