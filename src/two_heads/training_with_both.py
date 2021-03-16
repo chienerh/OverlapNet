@@ -83,19 +83,28 @@ def my_sigmoid_loss(y_true, y_pred):
   return loss
 
 
-def my_second_sigmoid_loss(y_true, y_pred):
-  """ Loss function in form of a mean sigmoid. Used for function angle.
+def sigmoid_loss_for_both(y_true, y_pred):
+  """ Loss function in form of a mean sigmoid. Used for both overlap and function angle.
       This is an alternative for mean squard error where
       - the loss for small differences is smaller than squared diff
       - the loss for large errors is kind of equal
 
    In Matlab:   1./(1+exp(-((diff+0.25)*24-12))), diff is absolute difference
   """
-  diff = K.abs(y_pred - y_true)
-  sigmoidx = (diff + 0.25) * 24 - 12
-  loss = K.mean(1 / (1 + K.exp(-sigmoidx)))
+  y_true_overlap = y_true[:,0]
+  y_true_function_angle = y_true[:,1]
+
+  # overlap loss
+  diff_overlap = K.abs(y_pred - y_true_overlap)
+  sigmoidx_overlap = (diff_overlap + 0.25) * 24 - 12
+  loss_overlap = K.mean(1 / (1 + K.exp(-sigmoidx_overlap)))
+
+  # function angle loss
+  diff_function_angle = K.abs(y_pred - y_true_function_angle)
+  sigmoidx_function_angle = (diff_function_angle + 0.25) * 24 - 12
+  loss_function_angle = K.mean(1 / (1 + K.exp(-sigmoidx_function_angle)))
   
-  return loss
+  return loss_overlap + loss_function_angle
 
   
 def my_entropy(y_true, y_pred):
@@ -267,9 +276,9 @@ if 'headType' in config['model']:
 learning_rate = learning_rate_schedule(initial_lr=initial_lr, alpha=lr_alpha)
 optimizer = keras.optimizers.Adagrad(lr=initial_lr)
 
-losses = {"overlap_output": my_sigmoid_loss, "function_angle_output": my_second_sigmoid_loss, "orientation_output": my_entropy}
+losses = {"overlap_output": sigmoid_loss_for_both, "orientation_output": my_entropy}
 
-lossWeights = {"overlap_output": 2.5, "function_angle_output": 2.5, "orientation_output": 1.0}
+lossWeights = {"overlap_output": 5.0, "orientation_output": 1.0}
 
 model.compile(loss=losses, loss_weights=lossWeights, optimizer=optimizer)
 
@@ -380,7 +389,7 @@ for epoch in range(0, no_epochs):
   losstag15 = "Validation overlap/RMS error"
 
   # metrics for overlap estimation
-  diffs = abs(np.squeeze(model_outputs[0])-validation_overlap)
+  diffs = abs(np.squeeze(model_outputs[0])-validation_orientation)
   mean_diff = np.mean(diffs)
   mean_square_error = np.mean(diffs*diffs)
   rms_error = np.sqrt(mean_square_error)
@@ -391,7 +400,7 @@ for epoch in range(0, no_epochs):
   logger.info("           Evaluation: RMS  overlap error        : %f" % rms_error)   
 
   # metrics for function angle estimation
-  diffs2 = abs(np.squeeze(model_outputs[1])-validation_function_angle)
+  diffs2 = abs(np.squeeze(model_outputs[0])-validation_function_angle)
   mean_diff2 = np.mean(diffs2)
   mean_square_error2 = np.mean(diffs2*diffs2)
   rms_error2 = np.sqrt(mean_square_error2)
@@ -402,15 +411,21 @@ for epoch in range(0, no_epochs):
   logger.info("           Evaluation: RMS  function angle error     :   %f" % rms_error2)   
 
   # metrics for orientation estimation
-  diffs3 = abs(np.squeeze(model_outputs[2])-validation_orientation)
-  mean_diff3 = np.mean(diffs3)
-  mean_square_error3 = np.mean(diffs3*diffs3)
-  rms_error3 = np.sqrt(mean_square_error3)
-  max_error3 = np.max(diffs3)
-  logger.info("  Evaluation on test data results: ")  
-  logger.info("           Evaluation: mean orientation difference:   %f" % mean_diff3)
-  logger.info("           Evaluation: max  orientation difference:   %f" % max_error3)
-  logger.info("           Evaluation: RMS  orientation error     :   %f" % rms_error3)   
+  network_orientation_output=np.squeeze(np.argmax(model_outputs[1], axis=1))
+  # The following takes the circular behaviour of angles into account !
+  diffs_orientation=np.minimum(abs(network_orientation_output-validation_orientation),
+        network_output_size - abs(network_orientation_output-validation_orientation))
+  diffs_orientation=diffs_orientation[validation_orientation>0.7]
+  mean_diff3=np.mean(diffs_orientation)
+  mean_square_error3=np.mean(diffs_orientation*diffs_orientation)
+  rms_error3=np.sqrt(mean_square_error3)
+  max_error3=np.max(diffs_orientation)
+
+  logger.info(" ")
+  logger.info("  Evaluation yaw orientation (overlap>0.7) on test data:")
+  logger.info("           Evaluation: mean difference:   %f" % mean_diff3)
+  logger.info("           Evaluation: max  difference:   %f" % max_error3)
+  logger.info("           Evaluation: RMS error        : %f" % rms_error3)  
 
   summary = tf.Summary(value=[tf.Summary.Value(tag=losstag14,
                                                simple_value=max_error)])

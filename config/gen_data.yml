@@ -1,4 +1,5 @@
 # the folder of raw LiDAR scans
+seq: "03"
 scan_folder: "/home/cel/data/kitti/sequences/03/velodyne"
 # scan_folder: "/home/cel/media/data/kitti/sequences/03/velodyne"
 

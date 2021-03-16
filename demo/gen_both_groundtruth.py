@@ -7,7 +7,7 @@ import yaml
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../src/utils'))
 from utils import *
-from com_overlap_yaw import com_overlap_yaw
+from com_function_angle import com_function_angle, read_function_angle_com_yaw, read_function_angle_com_overlap_yaw
 from normalize_data import normalize_data
 from split_train_val import split_train_val
 import matplotlib.pyplot as plt
@@ -35,7 +35,7 @@ def vis_gt(xys, ground_truth_mapping):
   ax.set_ylabel('Y [m]')
   ax.set_title('Demo 4: Generate ground truth for training')
   cbar = fig.colorbar(mapper, ax=ax)
-  cbar.set_label('Overlap', rotation=270, weight='bold')
+  cbar.set_label('cos(function angle)', rotation=270, weight='bold')
   plt.show()
 
 
@@ -74,7 +74,9 @@ if __name__ == '__main__':
   poses = np.array(poses_new)
 
   # generate overlap and yaw ground truth array
-  ground_truth_mapping = com_overlap_yaw(scan_paths, poses, frame_idx=0)
+  # ground_truth_mapping = com_function_angle(scan_paths, poses, frame_idx=0)
+  funcangle_file = '/home/cel/CURLY/code/DockerFolder/data/kitti/sequences/07_overlap/preprocess_data_demo/07_all.csv'
+  ground_truth_mapping = read_function_angle_com_overlap_yaw(scan_paths, poses, funcangle_file)
   
   # normalize the distribution of ground truth data
   dist_norm_data = normalize_data(ground_truth_mapping)
@@ -85,7 +87,7 @@ if __name__ == '__main__':
   # add sequence label to the data and save them as npz files
   seq_idx = config['Demo4']['seq']
   # specify the goal folder
-  dst_folder = os.path.join(dst_folder, 'ground_truth')
+  dst_folder = os.path.join(dst_folder, 'ground_truth_both')
   try:
     os.stat(dst_folder)
     print('generating depth data in: ', dst_folder)
@@ -96,26 +98,20 @@ if __name__ == '__main__':
   # training data
   train_seq = np.empty((train_data.shape[0], 2), dtype=object)
   train_seq[:] = seq_idx
-  np.savez_compressed(dst_folder + '/train_set', overlaps=train_data, seq=train_seq)
+  np.savez_compressed(dst_folder + '/train_set_both', overlaps=train_data, seq=train_seq)
   
   # validation data
   validation_seq = np.empty((validation_data.shape[0], 2), dtype=object)
   validation_seq[:] = seq_idx
-  np.savez_compressed(dst_folder + '/validation_set', overlaps=validation_data, seq=validation_seq)
+  np.savez_compressed(dst_folder + '/validation_set_both', overlaps=validation_data, seq=validation_seq)
   
   # raw ground truth data, fully mapping, could be used for testing
   ground_truth_seq = np.empty((ground_truth_mapping.shape[0], 2), dtype=object)
   ground_truth_seq[:] = seq_idx
-  np.savez_compressed(dst_folder + '/ground_truth_overlap_yaw', overlaps=ground_truth_mapping, seq=ground_truth_seq)
+  np.savez_compressed(dst_folder + '/ground_truth_overlap_yaw_both', overlaps=ground_truth_mapping, seq=ground_truth_seq)
   
   print('Finish saving the ground truth data for training and testing at: ', dst_folder)
   
   # visualize the raw ground truth mapping
-  vis_gt(poses[:, :2, 3], ground_truth_mapping)
-  
-  
-
-
-
-
+  # vis_gt(poses[:, :2, 3], ground_truth_mapping)
 

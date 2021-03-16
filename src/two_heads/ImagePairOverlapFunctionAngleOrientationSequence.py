@@ -121,13 +121,13 @@ class ImagePairOverlapFunctionAngleOrientationSequence(Sequence):
     
     for idx in range(len(y_overlap)):
       y_item = np.zeros(self.network_output_size)
-      y_item[int(y_orientation[idx])] = [y_overlap[idx], y_function_angle[idx]]
+      y_item[int(y_orientation[idx])] = y_function_angle[idx] # y_overlap[idx]
       y.append(y_item)
     
     y = np.asarray(y)
     
     if self.imgfilenames2:
-      return ([x1, x2], [y_overlap, y_function_angle, y])
+      return ([x1, x2], [np.hstack(y_overlap, y_function_angle), y])
     else:
       return ([x1], y)
   

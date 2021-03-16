@@ -75,7 +75,7 @@ if __name__ == '__main__':
 
   # generate overlap and yaw ground truth array
   # ground_truth_mapping = com_function_angle(scan_paths, poses, frame_idx=0)
-  funcangle_file = '/home/cel/CURLY/code/DockerFolder/data/kitti/sequences/07_overlap/preprocess_data_demo/07_0_260.csv'
+  funcangle_file = '/home/cel/CURLY/code/DockerFolder/data/kitti/sequences/07_overlap/preprocess_data_demo/07_all.csv'
   ground_truth_mapping = read_function_angle_com_yaw(scan_paths, poses, funcangle_file)
   
   # normalize the distribution of ground truth data

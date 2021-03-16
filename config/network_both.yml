@@ -6,7 +6,7 @@
 
 # Path where all experiments are stored. Data of current experiment
 # will be in experiments_path/testname
-experiments_path: "/home/cel/code/OverlapNet/result/"
+experiments_path: "/home/cel/code/DockerFolder/OverlapNet/result/"
 
 # String which defines experiment
 testname: "seq07_train_both"
@@ -63,13 +63,14 @@ learning_rate_decay: 1.0e-06
 #
 model:
   # Name of model.
-  modelType: 'SiameseNetworkBoth'
-  ##modelType: 'DeltaLayerConv1Network'
+  # modelType: 'SiameseNetworkBoth'
+  modelType: 'SiameseNetworkTemplate'
+  # modelType: 'DeltaLayerConv1Network'
   # If the model is the generic SiameseNetworkTemplate, then the name of the
   # leg and head can be given here
   legsType: '360OutputkLegs'
-  # overlap_head: 'DeltaLayerConv1NetworkHead'
-  overlap_head: 'DeltaLayerConv1NetworkHeadBoth'
+  overlap_head: 'DeltaLayerConv1NetworkHead'
+  # overlap_head: 'DeltaLayerConv1NetworkHeadBoth'
   orientation_head: 'CorrelationHead'
   # size of one input image, thus input size of one leg of siamese network (heightxwidth)
   # no_channels are defined due to used inputs channels above.

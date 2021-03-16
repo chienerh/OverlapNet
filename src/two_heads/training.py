@@ -373,6 +373,17 @@ for epoch in range(0, no_epochs):
   logger.info("           Evaluation: max  overlap difference:   %f" % max_error)
   logger.info("           Evaluation: RMS  overlap error        : %f" % rms_error)   
 
+  # metrics for orientation estimation
+  diffs3 = abs(np.squeeze(model_outputs[1])-validation_orientation)
+  mean_diff3 = np.mean(diffs3)
+  mean_square_error3 = np.mean(diffs3*diffs3)
+  rms_error3 = np.sqrt(mean_square_error3)
+  max_error3 = np.max(diffs3)
+  logger.info("  Evaluation on test data results: ")  
+  logger.info("           Evaluation: mean orientation difference:   %f" % mean_diff3)
+  logger.info("           Evaluation: max  orientation difference:   %f" % max_error3)
+  logger.info("           Evaluation: RMS  orientation error     :   %f" % rms_error3)  
+
   summary = tf.Summary(value=[tf.Summary.Value(tag=losstag14,
                                                simple_value=max_error)])
   writer.add_summary(summary, epoch) 
