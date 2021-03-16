@@ -6,13 +6,13 @@
 
 # Path where all experiments are stored. Data of current experiment
 # will be in experiments_path/testname
-experiments_path: "/home/cel/code/DockerFolder/OverlapNet/result/"
+experiments_path: "/home/cel/code/OverlapNet/result/"
 
 # String which defines experiment
 testname: "seq07_train_both"
 
 # weights from older training. Not used if empty
-pretrained_weightsfilename: "data/model_geo_overlap.weight"
+pretrained_weightsfilename: "data/model_geo.weight"
 
 # What input to use ?
 # Be aware that the networks will have different number of weights, thus
@@ -27,7 +27,8 @@ use_intensity: False               # default: False if parameter not there
 # Train and test data
 #
 # the folder of dataset
-data_root_folder: "data/"
+data_root_folder: "/home/cel/data/kitti/sequences/"
+ground_truth_folder: "ground_truth_both"
 
 # use multiple seqs for training, for testing phase please disable it
 training_seqs: "07"   

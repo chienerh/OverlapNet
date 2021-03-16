@@ -91,6 +91,8 @@ def sigmoid_loss_for_both(y_true, y_pred):
 
    In Matlab:   1./(1+exp(-((diff+0.25)*24-12))), diff is absolute difference
   """
+  print('y_pred shape: ', y_pred.shape, y_pred)
+  print('y_true shape: ', y_true.shape, y_true)
   y_true_overlap = y_true[:,0]
   y_true_function_angle = y_true[:,1]
 
@@ -123,7 +125,7 @@ logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
-configfilename = 'network.yml'
+configfilename = 'network_both.yml'
 if len(sys.argv) > 1:
   configfilename = sys.argv[1]
 
@@ -149,9 +151,10 @@ if 'training_seqs' in config:
   logger.info('Using multiple npz files for train/validation data ...')
   training_seqs = config['training_seqs']
   training_seqs = training_seqs.split()
-  
-  traindata_npzfiles = [os.path.join(data_root_folder, seq, 'ground_truth/train_set.npz') for seq in training_seqs]
-  validationdata_npzfiles = [os.path.join(data_root_folder, seq, 'ground_truth/validation_set.npz') for seq in training_seqs]
+  ground_truth_folder = config['ground_truth_folder']
+
+  traindata_npzfiles = [os.path.join(data_root_folder, seq, ground_truth_folder, 'train_set.npz') for seq in training_seqs]
+  validationdata_npzfiles = [os.path.join(data_root_folder, seq, ground_truth_folder, 'validation_set.npz') for seq in training_seqs]
 else:
   logger.info('Using a single npz file for train/validation data ...')
   traindata_npzfiles = [config['traindata_npzfile']]

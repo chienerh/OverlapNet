@@ -125,9 +125,10 @@ if 'training_seqs' in config:
   logger.info('Using multiple npz files for train/validation data ...')
   training_seqs = config['training_seqs']
   training_seqs = training_seqs.split()
+  ground_truth_folder = config['ground_truth_folder']
   
-  traindata_npzfiles = [os.path.join(data_root_folder, seq, 'ground_truth/train_set.npz') for seq in training_seqs]
-  validationdata_npzfiles = [os.path.join(data_root_folder, seq, 'ground_truth/validation_set.npz') for seq in training_seqs]
+  traindata_npzfiles = [os.path.join(data_root_folder, seq, ground_truth_folder, 'train_set.npz') for seq in training_seqs]
+  validationdata_npzfiles = [os.path.join(data_root_folder, seq, ground_truth_folder, 'validation_set.npz') for seq in training_seqs]
 else:
   logger.info('Using a single npz file for train/validation data ...')
   traindata_npzfiles = [config['traindata_npzfile']]
